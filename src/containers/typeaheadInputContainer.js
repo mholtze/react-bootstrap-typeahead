@@ -135,35 +135,35 @@ function typeaheadInputContainer(Input) {
             e.preventDefault();
           }
           break;
-        case RETURN:
-        case RIGHT:
-        case TAB:
-          // TODO: Support hinting for multi-selection.
-          if (multiple) {
-            break;
-          }
+        // case RETURN:
+        // case RIGHT:
+        // case TAB:
+        //   // TODO: Support hinting for multi-selection.
+        //   if (multiple) {
+        //     break;
+        //   }
 
-          const hintText = getHintText(this.props);
-          const {selectionStart} = e.target;
+        //   const hintText = getHintText(this.props);
+        //   const {selectionStart} = e.target;
 
-          // Autocomplete the selection if all of the following are true:
-          if (
-            // There's a hint or a menu item is highlighted.
-            (hintText || activeItem) &&
-            // There's no current selection.
-            !selected.length &&
-            // The input cursor is at the end of the text string when the user
-            // hits the right arrow key.
-            !(e.keyCode === RIGHT && selectionStart !== value.length) &&
-            !(e.keyCode === RETURN && !selectHintOnEnter)
-          ) {
-            e.preventDefault();
+        //   // Autocomplete the selection if all of the following are true:
+        //   if (
+        //     // There's a hint or a menu item is highlighted.
+        //     (hintText || activeItem) &&
+        //     // There's no current selection.
+        //     !selected.length &&
+        //     // The input cursor is at the end of the text string when the user
+        //     // hits the right arrow key.
+        //     !(e.keyCode === RIGHT && selectionStart !== value.length) &&
+        //     !(e.keyCode === RETURN && !selectHintOnEnter)
+        //   ) {
+        //     e.preventDefault();
 
-            const selectedOption = hintText ? initialItem : activeItem;
+        //     const selectedOption = hintText ? initialItem : activeItem;
 
-            onAdd && onAdd(selectedOption);
-          }
-          break;
+        //     onAdd && onAdd(selectedOption);
+        //   }
+        //   break;
       }
 
       this.props.onKeyDown(e);

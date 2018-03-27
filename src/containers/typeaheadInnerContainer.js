@@ -38,6 +38,9 @@ function typeaheadInnerContainer(Typeahead) {
         onShow,
         results,
         submitFormOnEnter,
+        labelKey,
+        onChange,
+        text
       } = this.props;
 
       switch (e.keyCode) {
@@ -97,6 +100,9 @@ function typeaheadInnerContainer(Typeahead) {
             onSelectionAdd(activeItem);
             break;
           }
+
+          onHide();
+          onChange({isFreeText: true, [labelKey]: text});
           break;
       }
 
