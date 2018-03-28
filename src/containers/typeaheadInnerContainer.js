@@ -102,7 +102,7 @@ function typeaheadInnerContainer(Typeahead) {
           }
 
           onHide();
-          onChange({isFreeText: true, [labelKey]: text});
+          onChange([{isFreeText: true, [labelKey]: text}]);
           break;
       }
 
