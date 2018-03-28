@@ -99,7 +99,7 @@ const asyncContainer = (Typeahead) => {
     }
 
     _handleChange = (selected) => {
-      this.setState({hasSelection: !!selected.length}, () => {
+      this.setState({hasSelection: !!(selected.length && !selected[0].isFreeText)}, () => {
         this.props.onChange && this.props.onChange(selected);
       });
     }

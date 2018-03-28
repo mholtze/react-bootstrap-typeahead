@@ -1973,7 +1973,7 @@ var asyncContainer = function asyncContainer(Typeahead) {
 
         return emptyLabel;
       }, _this._handleChange = function (selected) {
-        _this.setState({ hasSelection: !!selected.length }, function () {
+        _this.setState({ hasSelection: !!(selected.length && !selected[0].isFreeText) }, function () {
           _this.props.onChange && _this.props.onChange(selected);
         });
       }, _this._handleInputChange = function (query) {
