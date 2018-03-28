@@ -1973,7 +1973,9 @@ var asyncContainer = function asyncContainer(Typeahead) {
 
         return emptyLabel;
       }, _this._handleChange = function (selected) {
-        _this.setState({ hasSelection: !!(selected.length && !selected[0].isFreeText) }, function () {
+        var isFreeText = !!(_this.props.allowFreeText && selected.length && selected[0].isFreeText);
+
+        _this.setState({ hasSelection: !!(selected.length && !isFreeText) }, function () {
           _this.props.onChange && _this.props.onChange(selected);
         });
       }, _this._handleInputChange = function (query) {
@@ -2090,6 +2092,10 @@ var asyncContainer = function asyncContainer(Typeahead) {
 
   Container.propTypes = {
     /**
+     * Whether to allow free text or only allow known items.
+     */
+    allowFreeText: _propTypes2.default.bool,
+    /**
      * Delay, in milliseconds, before performing search.
      */
     delay: _propTypes2.default.number,
@@ -2122,6 +2128,7 @@ var asyncContainer = function asyncContainer(Typeahead) {
   };
 
   Container.defaultProps = {
+    allowFreeText: false,
     delay: DEFAULT_DELAY_MS,
     minLength: 2,
     options: [],
@@ -10353,6 +10360,7 @@ function typeaheadInputContainer(Input) {
       }, _this._handleKeyDown = function (e) {
         var _this$props2 = _this.props,
             activeItem = _this$props2.activeItem,
+            allowFreeText = _this$props2.allowFreeText,
             initialItem = _this$props2.initialItem,
             multiple = _this$props2.multiple,
             onAdd = _this$props2.onAdd,
@@ -10379,35 +10387,38 @@ function typeaheadInputContainer(Input) {
               e.preventDefault();
             }
             break;
-          // case RETURN:
-          // case RIGHT:
-          // case TAB:
-          //   // TODO: Support hinting for multi-selection.
-          //   if (multiple) {
-          //     break;
-          //   }
+          case _keyCode.RETURN:
+          case _keyCode.RIGHT:
+          case _keyCode.TAB:
+            if (allowFreeText) {
+              break;
+            }
 
-          //   const hintText = getHintText(this.props);
-          //   const {selectionStart} = e.target;
+            // TODO: Support hinting for multi-selection.
+            if (multiple) {
+              break;
+            }
 
-          //   // Autocomplete the selection if all of the following are true:
-          //   if (
-          //     // There's a hint or a menu item is highlighted.
-          //     (hintText || activeItem) &&
-          //     // There's no current selection.
-          //     !selected.length &&
-          //     // The input cursor is at the end of the text string when the user
-          //     // hits the right arrow key.
-          //     !(e.keyCode === RIGHT && selectionStart !== value.length) &&
-          //     !(e.keyCode === RETURN && !selectHintOnEnter)
-          //   ) {
-          //     e.preventDefault();
+            var hintText = (0, _utils.getHintText)(_this.props);
+            var selectionStart = e.target.selectionStart;
 
-          //     const selectedOption = hintText ? initialItem : activeItem;
+            // Autocomplete the selection if all of the following are true:
 
-          //     onAdd && onAdd(selectedOption);
-          //   }
-          //   break;
+            if (
+            // There's a hint or a menu item is highlighted.
+            (hintText || activeItem) &&
+            // There's no current selection.
+            !selected.length &&
+            // The input cursor is at the end of the text string when the user
+            // hits the right arrow key.
+            !(e.keyCode === _keyCode.RIGHT && selectionStart !== value.length) && !(e.keyCode === _keyCode.RETURN && !selectHintOnEnter)) {
+              e.preventDefault();
+
+              var selectedOption = hintText ? initialItem : activeItem;
+
+              onAdd && onAdd(selectedOption);
+            }
+            break;
         }
 
         _this.props.onKeyDown(e);
@@ -11480,7 +11491,9 @@ function typeaheadContainer(Typeahead) {
 
       _this._updateSelected = function (selected) {
         _this.setState({ selected: selected });
-        _this.props.onChange(selected);
+
+        // mholtze: only accept "real" selection changes where an item has actually been chosen
+        if (selected.length) _this.props.onChange(selected);
       };
 
       _this._updateText = function (text) {
@@ -11656,6 +11669,10 @@ function typeaheadContainer(Typeahead) {
      */
     a11yNumSelected: _propTypes2.default.func,
     /**
+     * Whether to allow free text or only allow known items.
+     */
+    allowFreeText: _propTypes2.default.bool,
+    /**
      * Allows the creation of new selections on the fly. Note that any new items
      * will be added to the list of selections, but not the list of original
      * options unless handled as such by `Typeahead`'s parent.
@@ -11823,6 +11840,7 @@ function typeaheadContainer(Typeahead) {
     a11yNumSelected: function a11yNumSelected(selected) {
       return (0, _utils.pluralize)('selection', selected.length);
     },
+    allowFreeText: false,
     allowNew: false,
     autoFocus: false,
     bodyContainer: false,
@@ -12471,6 +12489,7 @@ function typeaheadInnerContainer(Typeahead) {
       return _ret = (_temp = (_this = _possibleConstructorReturn(this, (_ref = WrappedTypeahead.__proto__ || Object.getPrototypeOf(WrappedTypeahead)).call.apply(_ref, [this].concat(args))), _this), _this._handleKeyDown = function (e) {
         var _this$props = _this.props,
             activeItem = _this$props.activeItem,
+            allowFreeText = _this$props.allowFreeText,
             isMenuShown = _this$props.isMenuShown,
             onActiveIndexChange = _this$props.onActiveIndexChange,
             onActiveItemChange = _this$props.onActiveItemChange,
@@ -12479,10 +12498,7 @@ function typeaheadInnerContainer(Typeahead) {
             onSelectionAdd = _this$props.onSelectionAdd,
             onShow = _this$props.onShow,
             results = _this$props.results,
-            submitFormOnEnter = _this$props.submitFormOnEnter,
-            labelKey = _this$props.labelKey,
-            onChange = _this$props.onChange,
-            text = _this$props.text;
+            submitFormOnEnter = _this$props.submitFormOnEnter;
 
 
         switch (e.keyCode) {
@@ -12530,6 +12546,9 @@ function typeaheadInnerContainer(Typeahead) {
             break;
           case _keyCode.RETURN:
             if (!isMenuShown) {
+              if (allowFreeText) {
+                _this._onFreeTextChange();
+              }
               break;
             }
 
@@ -12545,7 +12564,9 @@ function typeaheadInnerContainer(Typeahead) {
             }
 
             onHide();
-            onChange([_defineProperty({ isFreeText: true }, labelKey, text)]);
+            if (allowFreeText) {
+              _this._onFreeTextChange();
+            }
             break;
         }
 
@@ -12572,6 +12593,18 @@ function typeaheadInnerContainer(Typeahead) {
         return _react2.default.createElement(Typeahead, _extends({}, this.props, {
           onKeyDown: this._handleKeyDown
         }));
+      }
+    }, {
+      key: '_onFreeTextChange',
+      value: function _onFreeTextChange() {
+        var _props = this.props,
+            labelKey = _props.labelKey,
+            onChange = _props.onChange,
+            selected = _props.selected,
+            text = _props.text;
+
+
+        if (selected.length) onChange(selected);else onChange([_defineProperty({ isFreeText: true }, labelKey, text)]);
       }
     }]);
 

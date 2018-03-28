@@ -99,7 +99,9 @@ const asyncContainer = (Typeahead) => {
     }
 
     _handleChange = (selected) => {
-      this.setState({hasSelection: !!(selected.length && !selected[0].isFreeText)}, () => {
+      var isFreeText = !!(this.props.allowFreeText && selected.length && selected[0].isFreeText);
+
+      this.setState({hasSelection: !!(selected.length && !isFreeText)}, () => {
         this.props.onChange && this.props.onChange(selected);
       });
     }
@@ -147,6 +149,10 @@ const asyncContainer = (Typeahead) => {
 
   Container.propTypes = {
     /**
+     * Whether to allow free text or only allow known items.
+     */
+    allowFreeText: PropTypes.bool,
+    /**
      * Delay, in milliseconds, before performing search.
      */
     delay: PropTypes.number,
@@ -175,16 +181,17 @@ const asyncContainer = (Typeahead) => {
     /**
      * Whether or not the component should cache query results.
      */
-    useCache: PropTypes.bool,
+    useCache: PropTypes.bool
   };
 
   Container.defaultProps = {
+    allowFreeText: false,
     delay: DEFAULT_DELAY_MS,
     minLength: 2,
     options: [],
     promptText: 'Type to search...',
     searchText: 'Searching...',
-    useCache: true,
+    useCache: true
   };
 
   return Container;

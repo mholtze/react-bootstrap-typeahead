@@ -105,6 +105,7 @@ function typeaheadInputContainer(Input) {
     _handleKeyDown = (e) => {
       const {
         activeItem,
+        allowFreeText,
         initialItem,
         multiple,
         onAdd,
@@ -135,35 +136,39 @@ function typeaheadInputContainer(Input) {
             e.preventDefault();
           }
           break;
-        // case RETURN:
-        // case RIGHT:
-        // case TAB:
-        //   // TODO: Support hinting for multi-selection.
-        //   if (multiple) {
-        //     break;
-        //   }
+        case RETURN:
+        case RIGHT:
+        case TAB:
+          if (allowFreeText) {
+            break;
+          }
 
-        //   const hintText = getHintText(this.props);
-        //   const {selectionStart} = e.target;
+          // TODO: Support hinting for multi-selection.
+          if (multiple) {
+            break;
+          }
 
-        //   // Autocomplete the selection if all of the following are true:
-        //   if (
-        //     // There's a hint or a menu item is highlighted.
-        //     (hintText || activeItem) &&
-        //     // There's no current selection.
-        //     !selected.length &&
-        //     // The input cursor is at the end of the text string when the user
-        //     // hits the right arrow key.
-        //     !(e.keyCode === RIGHT && selectionStart !== value.length) &&
-        //     !(e.keyCode === RETURN && !selectHintOnEnter)
-        //   ) {
-        //     e.preventDefault();
+          const hintText = getHintText(this.props);
+          const {selectionStart} = e.target;
 
-        //     const selectedOption = hintText ? initialItem : activeItem;
+          // Autocomplete the selection if all of the following are true:
+          if (
+            // There's a hint or a menu item is highlighted.
+            (hintText || activeItem) &&
+            // There's no current selection.
+            !selected.length &&
+            // The input cursor is at the end of the text string when the user
+            // hits the right arrow key.
+            !(e.keyCode === RIGHT && selectionStart !== value.length) &&
+            !(e.keyCode === RETURN && !selectHintOnEnter)
+          ) {
+            e.preventDefault();
 
-        //     onAdd && onAdd(selectedOption);
-        //   }
-        //   break;
+            const selectedOption = hintText ? initialItem : activeItem;
+
+            onAdd && onAdd(selectedOption);
+          }
+          break;
       }
 
       this.props.onKeyDown(e);

@@ -326,7 +326,9 @@ function typeaheadContainer(Typeahead) {
 
     _updateSelected = (selected) => {
       this.setState({selected});
-      this.props.onChange(selected);
+
+      // mholtze: only accept "real" selection changes where an item has actually been chosen
+      if (selected.length) this.props.onChange(selected);
     }
 
     _updateText = (text) => {
@@ -348,6 +350,10 @@ function typeaheadContainer(Typeahead) {
      * of selections for screen readers. Receives the current selections.
      */
     a11yNumSelected: PropTypes.func,
+    /**
+     * Whether to allow free text or only allow known items.
+     */
+    allowFreeText: PropTypes.bool,
     /**
      * Allows the creation of new selections on the fly. Note that any new items
      * will be added to the list of selections, but not the list of original
@@ -525,6 +531,7 @@ function typeaheadContainer(Typeahead) {
     a11yNumSelected: (selected) => {
       return pluralize('selection', selected.length);
     },
+    allowFreeText: false,
     allowNew: false,
     autoFocus: false,
     bodyContainer: false,

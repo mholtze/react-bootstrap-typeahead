@@ -26,9 +26,22 @@ function typeaheadInnerContainer(Typeahead) {
       );
     }
 
+    _onFreeTextChange() {
+      const {
+        labelKey,
+        onChange,
+        selected,
+        text
+      } = this.props;
+
+      if (selected.length) onChange(selected);
+      else onChange([{isFreeText: true, [labelKey]: text}]);
+    }
+
     _handleKeyDown = (e) => {
       const {
         activeItem,
+        allowFreeText,
         isMenuShown,
         onActiveIndexChange,
         onActiveItemChange,
@@ -38,9 +51,6 @@ function typeaheadInnerContainer(Typeahead) {
         onShow,
         results,
         submitFormOnEnter,
-        labelKey,
-        onChange,
-        text
       } = this.props;
 
       switch (e.keyCode) {
@@ -87,6 +97,9 @@ function typeaheadInnerContainer(Typeahead) {
           break;
         case RETURN:
           if (!isMenuShown) {
+            if (allowFreeText) {
+              this._onFreeTextChange();
+            }
             break;
           }
 
@@ -102,7 +115,9 @@ function typeaheadInnerContainer(Typeahead) {
           }
 
           onHide();
-          onChange([{isFreeText: true, [labelKey]: text}]);
+          if (allowFreeText) {
+            this._onFreeTextChange();
+          }
           break;
       }
 
