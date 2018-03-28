@@ -12545,7 +12545,7 @@ function typeaheadInnerContainer(Typeahead) {
             }
 
             onHide();
-            onChange(_defineProperty({ isFreeText: true }, labelKey, text));
+            onChange([_defineProperty({ isFreeText: true }, labelKey, text)]);
             break;
         }
 
