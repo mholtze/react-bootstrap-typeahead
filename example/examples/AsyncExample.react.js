@@ -26,9 +26,6 @@ class AsyncExample extends React.Component {
           renderMenuItemChildren={(option, props) => (
             <GithubMenuItem key={option.id} user={option} />
           )}
-          onChange={sel => {
-            console.log('onchange', sel)
-          }}
         />
         {this._renderCheckboxes()}
       </div>
