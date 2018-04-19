@@ -108,6 +108,11 @@ const asyncContainer = (Typeahead) => {
 
     _handleInputChange = (query) => {
       this.props.onInputChange && this.props.onInputChange(query);
+      if (this.state.hasSelection) {
+        // always clear selection on input change since selection is applied in _handleChange
+        // which is called after this
+        this.setState({hasSelection: false});
+      }
       this._handleSearchDebounced(query);
     }
 
